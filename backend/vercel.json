@@ -1,11 +1,14 @@
 {
-  "buildCommand": "pip install -r requirements.txt",
-  "installCommand": "pip install -r requirements.txt",
-  "framework": null,
-  "regions": ["iad1"],
-  "functions": {
-    "api/**/*.py": {
-      "runtime": "python3.11"
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://zezo-edu-ai-backend.vercel.app/api/$1" },
+    { "source": "/ws/(.*)", "destination": "https://zezo-edu-ai-backend.vercel.app/ws/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
     }
-  }
+  ]
 }
