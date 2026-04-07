@@ -43,6 +43,14 @@ class ProjectBase(BaseModel):
 class ProjectCreate(ProjectBase):
     pass
 
+class ProjectUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    topic: Optional[str] = None
+    target_audience: Optional[str] = None
+    audience_type: Optional[str] = None
+    status: Optional[str] = None
+
 class ProjectResponse(ProjectBase):
     id: int
     owner_id: int
