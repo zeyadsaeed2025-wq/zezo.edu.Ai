@@ -1,3 +1,7 @@
+// Configuration - Update this to your backend URL
+const API_BASE = window.API_BASE || 'http://localhost:8000';
+const WS_BASE = window.WS_BASE || 'ws://localhost:8000';
+
 class EduForgeApp {
     constructor() {
         this.state = {
@@ -71,7 +75,7 @@ class EduForgeApp {
 
     async loadUser() {
         try {
-            const response = await fetch('/api/v1/auth/me', {
+            const response = await fetch(`${API_BASE}/api/v1/auth/me', {
                 headers: { 'Authorization': `Bearer ${this.state.token}` }
             });
             if (response.ok) {
@@ -94,7 +98,7 @@ class EduForgeApp {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await fetch('/api/v1/auth/token', {
+            const response = await fetch(`${API_BASE}/api/v1/auth/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
@@ -124,7 +128,7 @@ class EduForgeApp {
 
     async loadProjects() {
         try {
-            const response = await fetch('/api/v1/projects/', {
+            const response = await fetch(`${API_BASE}/api/v1/projects/', {
                 headers: { 'Authorization': `Bearer ${this.state.token}` }
             });
             if (response.ok) {
@@ -187,8 +191,7 @@ class EduForgeApp {
             this.state.ws.close();
         }
 
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}/ws/${projectId}?token=${this.state.token}`;
+        const wsUrl = `${WS_BASE}/ws/${projectId}?token=${this.state.token}`;
 
         this.state.ws = new WebSocket(wsUrl);
 
@@ -240,7 +243,7 @@ class EduForgeApp {
         this.showLoading('Generating curriculum...');
 
         try {
-            const response = await fetch('/api/v1/projects/generate-curriculum', {
+            const response = await fetch(`${API_BASE}/api/v1/projects/generate-curriculum', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -287,7 +290,7 @@ class EduForgeApp {
                     data: { text, context: this.state.currentProject?.topic }
                 }));
             } else {
-                const response = await fetch('/api/v1/ai/smart-assist', {
+                const response = await fetch(`${API_BASE}/api/v1/ai/smart-assist', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
