@@ -1,16 +1,34 @@
 """
-EduForge AI - Database Setup Script
+EduForge AI - Database Setup
+Run this script after setting DATABASE_URL environment variable
+
+Example:
+Windows:
+  set DATABASE_URL=postgresql://postgres:password@db.xxx.supabase.co:5432/postgres
+  python setup-database.py
+
+Linux/Mac:
+  export DATABASE_URL='postgresql://postgres:password@db.xxx.supabase.co:5432/postgres'
+  python setup-database.py
 """
 import psycopg2
 import os
+import sys
 
 def setup_database():
-    conn_string = os.environ.get('DATABASE_URL')
+    conn_string = os.environ.get('DATABASE_URL', '')
     
     if not conn_string:
-        print("ERROR: DATABASE_URL not set!")
-        print("\nPlease set your Supabase connection string:")
+        print("[ERROR] DATABASE_URL not set!")
+        print("\nUsage:")
+        print("  Windows: set DATABASE_URL=postgresql://...")
+        print("  Linux/Mac: export DATABASE_URL='postgresql://...'"
+        print("\nOr run START.bat in the backend folder")
         return False
+    
+    # URL-encode the password if it contains special characters
+    if '@' in conn_string.split('://')[1].split(':')[1].split('@')[0]:
+        print("[*] Note: Password contains special characters, make sure they are URL-encoded")
     
     try:
         print("[*] Connecting to database...")
@@ -19,6 +37,7 @@ def setup_database():
         
         print("[+] Connected! Creating tables...")
         
+        # Users table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -109,6 +128,7 @@ def setup_database():
         """)
         print("[+] Alerts table created")
         
+        # Create indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_lessons_project ON lessons(project_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_units_lesson ON units(lesson_id)")
@@ -119,11 +139,20 @@ def setup_database():
         conn.close()
         
         print("\n[SUCCESS] Database setup complete!")
+        print("You can now run the EduForge AI server.")
         return True
         
+    except psycopg2.OperationalError as e:
+        print(f"\n[DATABASE ERROR] {e}")
+        print("\nTroubleshooting:")
+        print("1. Check if your password is correct")
+        print("2. Make sure Supabase project is active")
+        print("3. Check your IP is allowed in Supabase settings")
+        return False
     except Exception as e:
-        print(f"[ERROR] {e}")
+        print(f"\n[ERROR] {e}")
         return False
 
 if __name__ == "__main__":
     setup_database()
+    input("\nPress Enter to exit...")

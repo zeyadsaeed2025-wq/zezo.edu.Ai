@@ -11,7 +11,6 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./eduforge.db")
-    DATABASE_PATH: str = "./eduforge.db"
     
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4-turbo-preview")
