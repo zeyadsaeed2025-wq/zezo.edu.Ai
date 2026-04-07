@@ -1,6 +1,19 @@
-{
-  "name": "zezo-edu-ai",
-  "repository": "https://github.com/zeyadsaeed2025-wq/zezo.edu.Ai",
-  "buildCommand": "pip install -r requirements.txt",
-  "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT"
-}
+services:
+  - type: web
+    name: eduforge-ai
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    region: ohio
+    plan: free
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: eduforge-db
+          instanceId: ""
