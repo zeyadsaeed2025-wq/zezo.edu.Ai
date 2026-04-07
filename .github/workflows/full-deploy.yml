@@ -1,0 +1,40 @@
+name: Deploy EduForge AI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Create .env
+        run: |
+          cd backend
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+
+      - name: Deploy to Railway
+        uses: peaceiris/actions-gh-action@v3
+        with:
+          args: |
+            run: |
+              curl -X POST "https://api.railway.app/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/deployments" \
+                -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+                -H "Content-Type: application/json"
