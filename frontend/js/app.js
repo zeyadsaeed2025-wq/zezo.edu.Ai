@@ -1,6 +1,8 @@
-// Configuration - Update this to your backend URL
-const API_BASE = window.API_BASE || 'http://localhost:8000';
-const WS_BASE = window.WS_BASE || 'ws://localhost:8000';
+// Configuration - Auto-detect API URL (works when served by same backend)
+const API_BASE = '';  // Empty = same origin
+const WS_BASE = window.location.protocol === 'https:' ? 
+    'wss://' + window.location.host : 
+    'ws://' + window.location.host;
 
 class EduForgeApp {
     constructor() {

@@ -1,0 +1,56 @@
+name: Deploy Full Stack
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Deploy Backend to Render
+  deploy-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Deploy to Render
+        uses: render-deploy-action@v1
+        with:
+          render-deploy-url: ${{ secrets.RENDER_DEPLOY_WEBHOOK_URL }}
+
+  # Deploy Frontend to Vercel
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Vercel
+        run: npm install -g vercel
+      
+      - name: Update API URL
+        run: |
+          # Replace with your actual backend URL
+          sed -i 's|const API_BASE = .*|const API_BASE = "https://zezo-edu-ai-backend.onrender.com";|' js/app.js
+      
+      - name: Deploy to Vercel
+        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
