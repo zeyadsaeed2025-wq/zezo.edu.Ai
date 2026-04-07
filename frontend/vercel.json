@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://zezo-edu-ai-backend.vercel.app/api/$1" },
+    { "source": "/ws/(.*)", "destination": "https://zezo-edu-ai-backend.vercel.app/ws/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ]
+}
