@@ -6,37 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-backend:
+  deploy-vercel:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run tests
-        run: python -c "from main import app; print('App OK')"
-
-      - name: Deploy to Railway
-        if: vars.RAILWAY_TOKEN != ''
-        run: |
-          curl -X POST "https://api.railway.app/v1/projects/${{ vars.RAILWAY_PROJECT_ID }}/deployments" \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
-            -H "Content-Type: application/json"
-
-  deploy-frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -45,8 +16,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install Vercel
+        run: npm install -g vercel
+
       - name: Deploy to Vercel
-        if: secrets.VERCEL_TOKEN != ''
         run: |
-          npm install -g vercel
           vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
