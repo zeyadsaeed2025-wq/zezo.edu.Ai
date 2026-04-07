@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: eduforge-ai
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    region: ohio
+    plan: starter
+    envVars:
+      - key: DATABASE_URL
+        description: "Supabase PostgreSQL - get from: https://jnzqdznnhcjeovmvznuq.supabase.co/settings/database"
+        sync: false
+      - key: OPENAI_API_KEY
+        description: "Get from: https://platform.openai.com/api-keys"
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true

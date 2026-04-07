@@ -1,5 +1,5 @@
 -- EduForge AI - Supabase Database Setup
--- Run this in Supabase SQL Editor
+-- Run this in Supabase SQL Editor: https://jnzqdznnhcjeovmvznuq.supabase.co/project/default/sql
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -89,7 +89,7 @@ CREATE INDEX IF NOT EXISTS idx_units_lesson ON units(lesson_id);
 CREATE INDEX IF NOT EXISTS idx_evaluations_project ON evaluations(project_id);
 CREATE INDEX IF NOT EXISTS idx_alerts_project ON alerts(project_id);
 
--- Enable Row Level Security (RLS)
+-- Allow all operations for development
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lessons ENABLE ROW LEVEL SECURITY;
@@ -97,22 +97,13 @@ ALTER TABLE units ENABLE ROW LEVEL SECURITY;
 ALTER TABLE evaluations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
-CREATE POLICY "Users can view own data" ON users FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own data" ON users FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Users can view own projects" ON projects FOR SELECT USING (auth.uid() = owner_id);
-CREATE POLICY "Users can insert own projects" ON projects FOR INSERT WITH CHECK (auth.uid() = owner_id);
-CREATE POLICY "Users can update own projects" ON projects FOR UPDATE USING (auth.uid() = owner_id);
-CREATE POLICY "Users can delete own projects" ON projects FOR DELETE USING (auth.uid() = owner_id);
-
--- For development: Allow all operations (remove in production!)
-CREATE POLICY "Allow all on users" ON users FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all on projects" ON projects FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all on lessons" ON lessons FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all on units" ON units FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all on evaluations" ON evaluations FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all on alerts" ON alerts FOR ALL USING (true) WITH CHECK (true);
+-- Policies for development (remove in production!)
+CREATE POLICY "allow_all_users" ON users FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_projects" ON projects FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_lessons" ON lessons FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_units" ON units FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_evaluations" ON evaluations FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_alerts" ON alerts FOR ALL USING (true) WITH CHECK (true);
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -123,15 +114,9 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Trigger for projects
 CREATE TRIGGER update_projects_updated_at
     BEFORE UPDATE ON projects
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-COMMENT ON TABLE users IS 'User accounts for EduForge AI';
-COMMENT ON TABLE projects IS 'Educational content projects';
-COMMENT ON TABLE lessons IS 'Individual lessons within projects';
-COMMENT ON TABLE units IS 'Units within lessons containing actual content';
-COMMENT ON TABLE evaluations IS 'Quality evaluations for projects';
-COMMENT ON TABLE alerts IS 'Quality alerts and warnings';
+SELECT 'Database setup complete!' as status;
