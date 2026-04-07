@@ -1,8 +1,11 @@
-# EduForge AI
+# 🎓 EduForge AI
 
 AI-Powered Educational Content Platform with Multi-Version Support
 
-## Features
+![EduForge AI](https://img.shields.io/badge/Status-Production-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+## ✨ Features
 
 - **Smart Curriculum Generation**: Create complete lessons, units, and full curriculum plans
 - **Multi-Version Content**: Automatically generate Standard, Simplified, and Accessibility versions
@@ -12,63 +15,99 @@ AI-Powered Educational Content Platform with Multi-Version Support
 - **Live Quality Meter**: Track Interactivity, Multimedia, Assessment, and Inclusiveness
 - **Inclusive Education**: Built-in support for students with special needs
 
-## Architecture
+## 🚀 Quick Start
 
-- **Backend**: Python FastAPI
-- **Database**: SQLite (initial) / PostgreSQL (production)
-- **Frontend**: HTML, CSS, JavaScript (vanilla)
-- **Real-time**: WebSockets
-- **AI**: OpenAI API integration
-
-## Quick Start
-
-### 1. Install Dependencies
+### Local Development
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/zeyadsaeed2025-wq/zezo.edu.Ai.git
+cd zezo.edu.Ai
+
+# 2. Set up backend
 cd backend
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-### 2. Configure Environment
-
-```bash
+# 3. Configure environment
 cp .env.example .env
-# Edit .env with your OpenAI API key
+# Edit .env with your OPENAI_API_KEY
+
+# 4. Run backend
+uvicorn main:app --reload
+
+# 5. Open browser
+# Navigate to http://localhost:8000
 ```
 
-### 3. Run the Server
+## 🌐 Deploy to Production
 
-```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+### Step 1: Set up Supabase Database
+
+1. Go to [supabase.com](https://supabase.com) and create an account
+2. Create a new project
+3. Go to **SQL Editor** and run the schema from `supabase/schema.sql`
+4. Go to **Settings > Database** and copy the **Connection string**
+
+### Step 2: Deploy Backend to Railway
+
+1. Go to [railway.app](https://railway.app) and sign up
+2. Click **New Project > Deploy from GitHub**
+3. Select the `zezo.edu.Ai` repository
+4. Set **Root Directory** to `backend`
+5. Add Environment Variables:
+   - `DATABASE_URL` = Your Supabase connection string
+   - `OPENAI_API_KEY` = Your OpenAI API key
+   - `SECRET_KEY` = Any random string (e.g., `openssl rand -base64 32`)
+6. Click **Deploy**
+
+Wait for deployment and copy your **Railway URL** (e.g., `https://zezo-edu-ai-backend.up.railway.app`)
+
+### Step 3: Deploy Frontend to Vercel
+
+1. Go to [vercel.com](https://vercel.com) and sign up
+2. Click **Import Project**
+3. Import from GitHub (`zezo.edu.Ai`)
+4. Set **Root Directory** to `frontend`
+5. Click **Deploy**
+
+### Step 4: Configure Frontend
+
+After Vercel deploys:
+1. Copy your **Railway backend URL**
+2. Edit `frontend/js/app.js`:
+   ```javascript
+   const API_BASE = 'https://your-railway-url.up.railway.app';
+   ```
+3. Commit and push changes
+4. Vercel will auto-redeploy
+
+## 📁 Project Structure
+
 ```
-
-### 4. Open Browser
-
-Navigate to: http://localhost:8000
-
-## Project Structure
-
-```
-EduForge-AI/
-├── backend/
-│   ├── app/
-│   │   ├── api/          # API endpoints
-│   │   ├── core/         # Configuration
+zezo.edu.Ai/
+├── backend/              # FastAPI Backend
+│   ├── app/              # Application code
+│   │   ├── api/         # API endpoints
+│   │   ├── core/        # Configuration
 │   │   ├── models/       # Database models
 │   │   ├── schemas/      # Pydantic schemas
 │   │   └── services/     # AI & WebSocket services
-│   ├── static/
-│   │   ├── css/          # Styles
-│   │   └── js/           # Frontend JavaScript
+│   ├── static/           # Static assets
 │   ├── templates/        # HTML templates
-│   └── main.py           # Application entry point
-├── .env.example
-└── requirements.txt
+│   └── main.py           # Entry point
+├── frontend/             # Static Frontend
+│   ├── css/             # Styles
+│   ├── js/              # JavaScript
+│   └── index.html       # Main HTML
+├── supabase/            # Database schema
+├── deploy.sh            # Linux/Mac deployment script
+├── deploy.ps1           # Windows deployment script
+└── README.md
 ```
 
-## API Endpoints
+## 🔌 API Endpoints
 
 ### Authentication
 - `POST /api/v1/auth/register` - Register new user
@@ -90,61 +129,7 @@ EduForge-AI/
 - `POST /api/v1/ai/fix-alert/{alert_id}` - Fix detected issue
 - `GET /api/v1/ai/quality-metrics/{project_id}` - Get quality scores
 
-### WebSocket
-- `WS /ws/{project_id}?token={jwt}` - Real-time updates
-
-## Database Schema
-
-### Users
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Integer | Primary key |
-| email | String | Unique email |
-| username | String | Unique username |
-| hashed_password | String | Bcrypt hash |
-| full_name | String | Display name |
-
-### Projects
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Integer | Primary key |
-| title | String | Project title |
-| topic | String | Educational topic |
-| target_audience | String | Target audience |
-| audience_type | String | general/special_needs/mixed |
-| status | String | draft/generated/completed |
-
-### Lessons
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Integer | Primary key |
-| project_id | Integer | Foreign key to Project |
-| title | String | Lesson title |
-| content_standard | JSON | Standard version content |
-| content_simplified | JSON | Simplified version |
-| content_accessibility | JSON | Accessibility version |
-| learning_objectives | JSON | List of objectives |
-
-### Units
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Integer | Primary key |
-| lesson_id | Integer | Foreign key to Lesson |
-| title | String | Unit title |
-| content | JSON | Multi-version content |
-| activities | JSON | Learning activities |
-| assessments | JSON | Assessment methods |
-
-### Evaluations
-| Field | Type | Description |
-|-------|------|-------------|
-| interactivity_score | Float | 0-100 score |
-| multimedia_score | Float | 0-100 score |
-| assessment_score | Float | 0-100 score |
-| inclusiveness_score | Float | 0-100 score |
-| overall_score | Float | Weighted average |
-
-## Multi-Version Content
+## 🧠 Multi-Version Content
 
 The system automatically generates three versions of content:
 
@@ -159,33 +144,37 @@ The system automatically generates three versions of content:
    - High contrast structure
    - Descriptive headings
 
-## AI Prompts
+## 🛠️ Technology Stack
 
-### Curriculum Generation
-Generates complete curriculum with lessons, units, activities, and assessments. Supports inclusive education with adaptations for special needs learners.
+- **Backend**: Python FastAPI
+- **Database**: Supabase (PostgreSQL)
+- **Frontend**: Vanilla HTML/CSS/JavaScript
+- **AI**: OpenAI API (GPT-4)
+- **Deployment**: Vercel (Frontend) + Railway (Backend)
 
-### Content Quality Analysis
-Evaluates content across four dimensions:
-- Interactivity (engagement opportunities)
-- Multimedia (visual/audio elements)
-- Assessment (quizzes and evaluations)
-- Inclusiveness (accessibility features)
+## 📝 Environment Variables
 
-### Smart Assist
-Provides suggestions for:
-- Simplifying text
-- Adding interaction
-- Including media
-- Improving accessibility
+| Variable | Description | Required |
+|----------|-------------|----------|
+| DATABASE_URL | Supabase PostgreSQL connection string | Yes |
+| OPENAI_API_KEY | OpenAI API key for AI features | Yes |
+| SECRET_KEY | JWT signing secret | Yes |
+| OPENAI_MODEL | OpenAI model (default: gpt-4-turbo-preview) | No |
 
-## Environment Variables
+## 🐳 Docker Deployment
 
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
 ```
-OPENAI_API_KEY=your-api-key
-OPENAI_MODEL=gpt-4-turbo-preview
-SECRET_KEY=your-secret-key
-```
 
-## License
+## 📄 License
 
-MIT License
+MIT License - See [LICENSE](LICENSE) for details.
+
+---
+
+Built with ❤️ for educators and students everywhere.
