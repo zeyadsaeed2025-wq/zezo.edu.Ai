@@ -28,7 +28,7 @@ async def get_current_user(
         raise credentials_exception
     
     from sqlalchemy import select
-    result = await db.execute(select(User).where(User.id == user_id))
+    result = await db.execute(select(User).where(User.id == int(user_id)))
     user = result.scalar_one_or_none()
     
     if user is None:
@@ -71,7 +71,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token = create_access_token(data={"sub": user.id, "username": user.username})
+    access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/me", response_model=UserResponse)
